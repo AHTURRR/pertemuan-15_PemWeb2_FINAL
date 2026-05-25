@@ -1,0 +1,343 @@
+/* ============================================
+   CUSTOM STYLING - SISTEM PERPUSTAKAAN
+   ============================================ */
+
+:root {
+    --primary: #007bff;
+    --success: #28a745;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --info: #17a2b8;
+    --light-bg: #f8f9fa;
+}
+
+/* ============================================
+   GENERAL STYLES
+   ============================================ */
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-bg);
+}
+
+.section-header {
+    margin-bottom: 2rem;
+}
+
+.section-header h2 {
+    font-weight: 600;
+    color: #333;
+}
+
+/* ============================================
+   TABLE STYLES
+   ============================================ */
+
+.table {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.table thead {
+    background-color: #343a40;
+    font-weight: 600;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.table tbody tr:hover {
+    background-color: #f0f8ff !important;
+    cursor: pointer;
+}
+
+.table td {
+    vertical-align: middle;
+    padding: 12px !important;
+}
+
+/* ============================================
+   CARD STYLES
+   ============================================ */
+
+.card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.card-hover {
+    border-left: 4px solid var(--primary);
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 123, 255, 0.2) !important;
+}
+
+.card-anggota {
+    border-left: 5px solid var(--info);
+    background: white;
+}
+
+.card-anggota:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(23, 162, 184, 0.15) !important;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-left: 5px solid var(--info);
+}
+
+.card-title {
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* ============================================
+   BADGE STYLES
+   ============================================ */
+
+.badge {
+    font-weight: 600;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    letters-pace: 0.5px;
+}
+
+.badge-lg {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.95rem;
+}
+
+/* ============================================
+   ALERT STYLES
+   ============================================ */
+
+.alert {
+    border: none;
+    border-left: 4px solid;
+    border-radius: 8px;
+    animation: slideIn 0.3s ease;
+}
+
+.alert-info {
+    border-left-color: var(--info);
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.alert-warning {
+    border-left-color: var(--warning);
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.alert-danger {
+    border-left-color: var(--danger);
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.alert-success {
+    border-left-color: var(--success);
+    background-color: #d4edda;
+    color: #155724;
+}
+
+/* ============================================
+   TIMELINE STYLES
+   ============================================ */
+
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--success), var(--info));
+}
+
+.timeline-item {
+    position: relative;
+    display: flex;
+    gap: 20px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -20px;
+    top: 0;
+    background: white;
+    border-radius: 50%;
+    padding: 4px;
+}
+
+.timeline-content {
+    flex: 1;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.timeline-content:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateX(5px);
+}
+
+.timeline-content h5 {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.timeline-content p {
+    margin: 0;
+}
+
+/* ============================================
+   NAVBAR CUSTOMIZATION
+   ============================================ */
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+}
+
+.nav-link {
+    transition: color 0.3s ease;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    color: var(--info) !important;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 600;
+    color: #333;
+}
+
+.display-5 {
+    font-weight: 700;
+    color: #222;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+.fw-500 {
+    font-weight: 500;
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+
+.shadow-sm {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.border-bottom {
+    border-bottom: 2px solid #dee2e6 !important;
+}
+
+.pb-3 {
+    padding-bottom: 1rem !important;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+    .table {
+        font-size: 0.875rem;
+    }
+
+    .table td {
+        padding: 8px !important;
+    }
+
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .timeline {
+        padding-left: 20px;
+    }
+
+    .timeline-marker {
+        left: -15px;
+    }
+
+    .display-5 {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .alert {
+        font-size: 0.875rem;
+        padding: 0.75rem;
+    }
+
+    .badge {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+    }
+}
