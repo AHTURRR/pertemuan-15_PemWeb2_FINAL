@@ -130,3 +130,134 @@ Akses aplikasi di: `http://localhost:8000`
 ## 📚 Implementasi
 # pertemuan-11_PemWeb2
 # pertemuan-12_PemWeb2
+
+
+# Sistem Manajemen Anggota Perpustakaan PERTEMUAN 13
+
+## Deskripsi
+
+Aplikasi berbasis Laravel untuk mengelola data anggota perpustakaan dengan fitur CRUD, auto-generate kode anggota, pencarian dan filter data, serta export data ke Excel.
+
+## Teknologi yang Digunakan
+
+* Laravel 13
+* PHP 8.4
+* MySQL
+* Bootstrap 5
+* Laravel Excel (Maatwebsite Excel)
+
+## Fitur
+
+### 1. CRUD Data Anggota
+
+* Tambah anggota
+* Lihat detail anggota
+* Edit data anggota
+* Hapus anggota
+
+### 2. Auto Generate Kode Anggota
+
+Format kode anggota:
+
+AGT-2026-001
+
+AGT-2026-002
+
+AGT-2026-003
+
+### 3. Search dan Filter
+
+Pencarian berdasarkan:
+
+* Nama
+* Email
+* Telepon
+
+Filter berdasarkan:
+
+* Jenis Kelamin
+* Status
+* Pekerjaan
+
+### 4. Export Excel
+
+Export seluruh data anggota ke file Excel (.xlsx).
+
+## Screenshot
+
+### Dashboard Data Anggota
+
+![Dashboard](sspoto/dashboard.png)
+
+### Form Tambah Anggota
+
+![Create](sspoto/create.png)
+
+### Detail Anggota
+
+![Show](sspoto/show.png)
+
+### Edit Anggota
+
+![Edit](sspoto/edit.png)
+
+### Search dan Filter
+
+![Search](sspoto/search.png)
+
+### Export Excel
+
+![Export](sspoto/export.png)
+
+## Cara Menjalankan Project
+
+Clone repository:
+
+```bash
+git clone https://github.com/username/pustaka-app.git
+```
+
+Masuk ke folder project:
+
+```bash
+cd pustaka-app
+```
+
+Install dependency:
+
+```bash
+composer install
+```
+
+Copy file environment:
+
+```bash
+cp .env.example .env
+```
+
+Generate key:
+
+```bash
+php artisan key:generate
+```
+
+Migrasi database:
+
+```bash
+php artisan migrate
+```
+
+Jalankan server:
+
+```bash
+php artisan serve
+```
+
+## Author
+
+Nama: Ahmad Turmudi
+
+Program Studi Informatika
+
+UIN K.H. Abdurrahman Wahid Pekalongan
+# pertemuan-13_PemWeb2
