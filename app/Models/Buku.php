@@ -4,10 +4,11 @@ namespace App\Models;
  
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
  
 class Buku extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
  
     /**
      * Nama tabel yang digunakan oleh model ini.

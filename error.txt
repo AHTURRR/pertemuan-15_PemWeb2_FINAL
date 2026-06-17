@@ -1,0 +1,17 @@
+./composer.json has been updated
+Running composer update maatwebsite/excel --with-all-dependencies
+Loading composer repositories with package information
+Updating dependencies
+Your requirements could not be resolved to an installable set of packages.
+
+  Problem 1
+    - Root composer.json requires maatwebsite/excel 3.1.69 -> satisfiable by maatwebsite/excel[3.1.69].
+    - maatwebsite/excel 3.1.69 requires phpoffice/phpspreadsheet ^1.30.4 -> satisfiable by phpoffice/phpspreadsheet[1.30.5].
+    - phpoffice/phpspreadsheet 1.30.5 requires ext-gd * -> it is missing from your system. Install or enable PHP's gd extension.
+
+To enable extensions, verify that they are enabled in your .ini files:
+    - C:\laragonv2\bin\php\php-8.4.12-nts-Win32-vs17-x64\php.ini
+You can also run `php --ini` in a terminal to see which files are used by PHP in CLI mode.
+Alternatively, you can run Composer with `--ignore-platform-req=ext-gd` to temporarily ignore these required extensions.
+
+Installation failed, reverting ./composer.json and ./composer.lock to their original content.
