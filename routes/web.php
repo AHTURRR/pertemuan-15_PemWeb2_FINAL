@@ -1,78 +1,102 @@
 <?php
- 
-use App\Http\Controllers\PerpustakaanController;
+
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\KategoriController;
-use Illuminate\Support\Facades\DB;
-use App\Models\Buku;
-use App\Models\Anggota;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BukuController;
 use App\Http\Controllers\AnggotaController;
-use App\Http\Controllers\DashboardController;
- 
+use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\KategoriController;
+
 Route::get('/', function () {
     return view('home');
 })->name('home');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-
-// ✅ Semua route SPESIFIK harus di atas Route::resource
-Route::get('/buku/search', [BukuController::class, 'search'])->name('buku.search');
-Route::post('/buku/bulk-delete', [BukuController::class, 'bulkDelete'])->name('buku.bulk-delete');
-Route::get('/buku/kategori/{kategori}', [BukuController::class, 'filterKategori'])->name('buku.kategori');
-
-// ✅ Route::resource PALING BAWAH — karena ia mendaftarkan /buku/{buku}
-Route::resource('buku', BukuController::class);
-
-Route::get('/anggota/export', [AnggotaController::class, 'export'])
-    ->name('anggota.export');
-
-Route::get('/anggota/search', [AnggotaController::class, 'search'])
-    ->name('anggota.search');
-
-Route::resource('anggota', AnggotaController::class);
-
-// Route untuk testing
-Route::get('/test-accessor-scope', function () {
-    return view('test-accessor-scope', [
-        'bukus' => Buku::all(),
-        'bukuTerbaru' => Buku::terbaru()->get(),
-        'bukuMenipis' => Buku::stokMenipis()->get(),
-        'anggotas' => Anggota::all(),
-        'anggotaBaru' => Anggota::terdaftarBulanIni()->get(),
-    ]);
+Route::get('/hello', function () {
+    return 'Hello dari Laravel!';
 });
- 
-// Testing Scope & Query
-Route::get('/test-query', function () {
-    $html = '<h1>Testing Query Eloquent</h1>';
+
+Route::middleware(['auth'])->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Dashboard
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Buku
+    |--------------------------------------------------------------------------
+    */
+
+
+    Route::get('/buku/search', [BukuController::class, 'search'])
+        ->name('buku.search');
+
+    Route::post('/buku/bulk-delete', [BukuController::class, 'bulkDelete'])
+        ->name('buku.bulk-delete');
+
+    Route::get('/buku/kategori/{kategori}', [BukuController::class, 'filterKategori'])
+        ->name('buku.kategori');
+
+    Route::get('/buku/export', [BukuController::class, 'export'])
+    ->name('buku.export');
     
-    // Buku tersedia
-    $tersedia = Buku::tersedia()->get();
-    $html .= '<h3>Buku Tersedia (Stok > 0): ' . $tersedia->count() . '</h3>';
-    $html .= '<ul>';
-    foreach ($tersedia as $buku) {
-        $html .= '<li>' . $buku->judul . ' (Stok: ' . $buku->stok . ')</li>';
-    }
-    $html .= '</ul>';
-    
-    // Buku Programming
-    $programming = Buku::kategori('Programming')->get();
-    $html .= '<h3>Buku Programming: ' . $programming->count() . '</h3>';
-    $html .= '<ul>';
-    foreach ($programming as $buku) {
-        $html .= '<li>' . $buku->judul . '</li>';
-    }
-    $html .= '</ul>';
-    
-    // Anggota Aktif
-    $aktif = Anggota::aktif()->get();
-    $html .= '<h3>Anggota Aktif: ' . $aktif->count() . '</h3>';
-    $html .= '<ul>';
-    foreach ($aktif as $anggota) {
-        $html .= '<li>' . $anggota->nama . ' (' . $anggota->email . ')</li>';
-    }
-    $html .= '</ul>';
-    
-    return $html;
+    Route::resource('buku', BukuController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Anggota
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/anggota/export', [AnggotaController::class, 'export'])
+        ->name('anggota.export');
+
+    Route::get('/anggota/search', [AnggotaController::class, 'search'])
+        ->name('anggota.search');
+
+    Route::resource('anggota', AnggotaController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Kategori
+    |--------------------------------------------------------------------------
+    */
+
+    Route::resource('kategori', KategoriController::class)
+        ->only(['index', 'show']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Transaksi
+    |--------------------------------------------------------------------------
+    */
+
+    Route::resource('transaksi', TransaksiController::class)
+        ->only(['index', 'create', 'store', 'show']);
+
+    Route::put('/transaksi/{id}/kembalikan', [TransaksiController::class, 'kembalikan'])
+        ->name('transaksi.kembalikan');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile (Laravel Breeze)
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
 });
+
+require __DIR__.'/auth.php';

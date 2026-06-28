@@ -112,4 +112,10 @@ class Anggota extends Model
     {
         return $query->where('jenis_kelamin', $jenisKelamin);
     }
+
+    // Tambahkan method ini di class Anggota
+    public function transaksis()
+    {
+        return $this->hasMany(Transaksi::class);
+    }
 }

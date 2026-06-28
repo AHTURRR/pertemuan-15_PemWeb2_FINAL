@@ -115,4 +115,10 @@ class Buku extends Model
     {
         return $query->where('kategori', $kategori);
     }
+
+    // Tambahkan method ini di class Buku
+    public function transaksis()
+    {
+        return $this->hasMany(Transaksi::class);
+    }
 }

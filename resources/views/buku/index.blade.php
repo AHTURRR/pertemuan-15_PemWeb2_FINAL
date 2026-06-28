@@ -3,310 +3,214 @@
 @section('title', 'Daftar Buku')
 
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>
-            <i class="bi bi-book"></i>
-            Daftar Buku
-        </h1>
-        <div class="d-flex gap-2">
-            <button type="button" id="btn-bulk-delete" class="btn btn-danger d-none" onclick="konfirmasiBulkDelete()">
-                <i class="bi bi-trash"></i>
-                Hapus Terpilih (<span id="jumlah-terpilih">0</span>)
+    <x-page-header
+        title="Daftar Buku"
+        subtitle="Kelola koleksi buku, pantau stok, dan temukan data buku dengan cepat."
+        icon="bi-journal-bookmark"
+        :breadcrumbs="[
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'Buku'],
+        ]"
+    >
+        <x-slot name="actions">
+            <button type="button" id="btn-bulk-delete" class="btn btn-danger d-none">
+                <i class="bi bi-trash"></i> Hapus Terpilih (<span id="jumlah-terpilih">0</span>)
             </button>
-
-            <a href="{{ route('buku.export') }}" class="btn btn-success">
-                <i class="bi bi-file-earmark-spreadsheet"></i> Export CSV
+            <a href="{{ route('buku.export') }}" class="btn btn-success" data-loading-link>
+                <i class="bi bi-file-earmark-spreadsheet"></i> Export
             </a>
-
             <a href="{{ route('buku.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Tambah Buku
             </a>
-        </div>
+        </x-slot>
+    </x-page-header>
+
+    <div class="stat-grid">
+        <x-stat-card label="Total Buku" :value="$totalBuku" icon="bi-bookshelf" variant="primary" />
+        <x-stat-card label="Buku Tersedia" :value="$bukuTersedia" icon="bi-check-circle" variant="success" />
+        <x-stat-card label="Buku Habis" :value="$bukuHabis" icon="bi-x-circle" variant="danger" />
+        <x-stat-card label="Data Ditampilkan" :value="$bukus->count()" icon="bi-table" variant="info" />
     </div>
 
-    {{-- Statistik Cards --}}
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card border-primary">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-1">Total Buku</h6>
-                            <h2 class="mb-0">{{ $totalBuku }}</h2>
-                        </div>
-                        <div class="text-primary">
-                            <i class="bi bi-book-fill" style="font-size: 3rem;"></i>
-                        </div>
-                    </div>
-                </div>
+    <div class="app-card">
+        <form action="{{ route('buku.search') }}" method="GET" class="row g-3 align-items-end" data-no-loading>
+            <div class="col-lg-4">
+                <label for="keyword" class="form-label">Cari Buku</label>
+                <input type="text" id="keyword" name="keyword" class="form-control"
+                    placeholder="Cari judul, pengarang, atau penerbit..." value="{{ request('keyword') }}">
+                <div class="form-text">Gunakan kata kunci agar koleksi lebih cepat ditemukan.</div>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <label for="kategori" class="form-label">Kategori</label>
+                <select name="kategori" id="kategori" class="form-select">
+                    <option value="">Semua Kategori</option>
+                    @foreach ($kategoriList ?? [] as $kat)
+                        <option value="{{ $kat }}" @selected(request('kategori', $kategori ?? '') == $kat)>{{ $kat }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <label for="tahun" class="form-label">Tahun</label>
+                <select name="tahun" id="tahun" class="form-select">
+                    <option value="">Semua Tahun</option>
+                    @foreach ($tahunList ?? [] as $tahun)
+                        <option value="{{ $tahun }}" @selected(request('tahun') == $tahun)>{{ $tahun }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <label for="ketersediaan" class="form-label">Ketersediaan</label>
+                <select name="ketersediaan" id="ketersediaan" class="form-select">
+                    <option value="">Semua</option>
+                    <option value="tersedia" @selected(request('ketersediaan') == 'tersedia')>Tersedia</option>
+                    <option value="habis" @selected(request('ketersediaan') == 'habis')>Habis</option>
+                </select>
+            </div>
+            <div class="col-lg-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-fill">
+                    <i class="bi bi-search"></i> Cari
+                </button>
+                <a href="{{ route('buku.index') }}" class="btn btn-outline-secondary" data-bs-toggle="tooltip" title="Reset filter">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="app-card table-card">
+        <div class="table-toolbar">
+            <div>
+                <h3 class="h5 fw-bold mb-1">Koleksi Buku</h3>
+                <p class="text-muted mb-0">Menampilkan {{ $bukus->count() }} data buku.</p>
+            </div>
+            <div class="input-group search-box">
+                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                <input type="search" class="form-control" placeholder="Cari cepat di tabel..." data-table-search="#bukuTable">
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card border-success">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-1">Buku Tersedia</h6>
-                            <h2 class="mb-0">{{ $bukuTersedia }}</h2>
-                        </div>
-                        <div class="text-success">
-                            <i class="bi bi-check-circle-fill" style="font-size: 3rem;"></i>
-                        </div>
-                    </div>
-                </div>
+        <form id="form-bulk-delete" action="{{ route('buku.bulk-delete') }}" method="POST"
+            data-confirm
+            data-confirm-title="Hapus Buku Terpilih"
+            data-confirm-text="Apakah Anda yakin ingin menghapus semua buku yang dipilih?"
+            data-confirm-button="Ya, Hapus">
+            @csrf
+            <div id="hidden-ids"></div>
+        </form>
+
+        @if ($bukus->count())
+            <div class="table-responsive">
+                <table class="table align-middle" id="bukuTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 48px;">
+                                <input class="form-check-input" type="checkbox" id="select-all" aria-label="Pilih semua buku">
+                            </th>
+                            <th>Buku</th>
+                            <th>Kategori</th>
+                            <th>Pengarang</th>
+                            <th class="text-end">Tahun</th>
+                            <th class="text-end">Stok</th>
+                            <th>Status</th>
+                            <th class="text-end">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($bukus as $buku)
+                            <tr>
+                                <td>
+                                    <input class="form-check-input checkbox-buku" type="checkbox" data-id="{{ $buku->id }}" aria-label="Pilih {{ $buku->judul }}">
+                                </td>
+                                <td>
+                                    <div class="fw-bold">{{ $buku->judul }}</div>
+                                    <div class="text-muted small">{{ $buku->kode_buku }} · {{ $buku->penerbit }}</div>
+                                </td>
+                                <td><span class="badge bg-primary-subtle text-primary">{{ $buku->kategori }}</span></td>
+                                <td>{{ $buku->pengarang }}</td>
+                                <td class="text-end">{{ $buku->tahun_terbit }}</td>
+                                <td class="text-end fw-bold">{{ $buku->stok }}</td>
+                                <td>
+                                    @if ($buku->stok > 0)
+                                        <span class="badge bg-success">Tersedia</span>
+                                    @else
+                                        <span class="badge bg-danger">Habis</span>
+                                    @endif
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group" role="group" aria-label="Aksi buku">
+                                        <a href="{{ route('buku.show', $buku->id) }}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ route('buku.edit', $buku->id) }}" class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form action="{{ route('buku.destroy', $buku->id) }}" method="POST" data-confirm
+                                            data-confirm-title="Hapus Buku"
+                                            data-confirm-text="Apakah Anda yakin ingin menghapus buku '{{ $buku->judul }}'?"
+                                            data-confirm-button="Ya, Hapus">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Hapus">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card border-danger">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-1">Buku Habis</h6>
-                            <h2 class="mb-0">{{ $bukuHabis }}</h2>
-                        </div>
-                        <div class="text-danger">
-                            <i class="bi bi-x-circle-fill" style="font-size: 3rem;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @else
+            <x-empty-state
+                title="Belum ada data buku"
+                message="Tambahkan buku agar pengguna dapat mulai melakukan peminjaman."
+                icon="bi-journal-plus"
+                :actionUrl="route('buku.create')"
+                actionLabel="Tambah Buku"
+            />
+        @endif
     </div>
-
-    {{-- Filter Kategori --}}
-    <div class="card mb-4">
-        <div class="card-body">
-            <h6 class="card-title">
-                <i class="bi bi-funnel"></i> Filter Kategori:
-            </h6>
-            <div class="btn-group" role="group">
-                <a href="{{ route('buku.index') }}"
-                    class="btn btn-sm {{ !isset($kategori) ? 'btn-primary' : 'btn-outline-primary' }}">
-                    Semua
-                </a>
-                <a href="{{ route('buku.kategori', 'Programming') }}"
-                    class="btn btn-sm {{ isset($kategori) && $kategori == 'Programming' ? 'btn-primary' : 'btn-outline-primary' }}">
-                    Programming
-                </a>
-                <a href="{{ route('buku.kategori', 'Database') }}"
-                    class="btn btn-sm {{ isset($kategori) && $kategori == 'Database' ? 'btn-primary' : 'btn-outline-primary' }}">
-                    Database
-                </a>
-                <a href="{{ route('buku.kategori', 'Web Design') }}"
-                    class="btn btn-sm {{ isset($kategori) && $kategori == 'Web Design' ? 'btn-primary' : 'btn-outline-primary' }}">
-                    Web Design
-                </a>
-                <a href="{{ route('buku.kategori', 'Networking') }}"
-                    class="btn btn-sm {{ isset($kategori) && $kategori == 'Networking' ? 'btn-primary' : 'btn-outline-primary' }}">
-                    Networking
-                </a>
-                <a href="{{ route('buku.kategori', 'Data Science') }}"
-                    class="btn btn-sm {{ isset($kategori) && $kategori == 'Data Science' ? 'btn-primary' : 'btn-outline-primary' }}">
-                    Data Science
-                </a>
-            </div>
-        </div>
-    </div>
-
-    {{-- Form Search & Filter Advanced --}}
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-light">
-            <h6 class="mb-0"><i class="bi bi-search"></i> Pencarian & Filter Advanced</h6>
-        </div>
-        <div class="card-body">
-            <form action="{{ route('buku.search') }}" method="GET">
-                <div class="row g-2">
-                    <div class="col-md-4">
-                        <label class="form-label small fw-semibold">Keyword</label>
-                        <input type="text" name="keyword" class="form-control form-control-sm"
-                            placeholder="Cari judul, pengarang, penerbit..." value="{{ request('keyword') }}">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label small fw-semibold">Kategori</label>
-                        <select name="kategori" class="form-select form-select-sm">
-                            <option value="">Semua Kategori</option>
-                            @isset($kategoriList)
-                                @foreach ($kategoriList as $kat)
-                                    <option value="{{ $kat }}" {{ request('kategori') == $kat ? 'selected' : '' }}>
-                                        {{ $kat }}
-                                    </option>
-                                @endforeach
-                            @endisset
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label small fw-semibold">Tahun</label>
-                        <select name="tahun" class="form-select form-select-sm">
-                            <option value="">Semua Tahun</option>
-                            @isset($tahunList)
-                                @foreach ($tahunList as $thn)
-                                    <option value="{{ $thn }}" {{ request('tahun') == $thn ? 'selected' : '' }}>
-                                        {{ $thn }}
-                                    </option>
-                                @endforeach
-                            @endisset
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label small fw-semibold">Ketersediaan</label>
-                        <select name="ketersediaan" class="form-select form-select-sm">
-                            <option value="">Semua</option>
-                            <option value="tersedia" {{ request('ketersediaan') == 'tersedia' ? 'selected' : '' }}>
-                                Tersedia
-                            </option>
-                            <option value="habis" {{ request('ketersediaan') == 'habis' ? 'selected' : '' }}>
-                                Habis
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-md-2 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-primary btn-sm w-100">
-                            <i class="bi bi-search"></i> Cari
-                        </button>
-                        <a href="{{ route('buku.index') }}" class="btn btn-outline-secondary btn-sm w-100">
-                            <i class="bi bi-x-circle"></i> Reset
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    {{-- Header Grid + Pilih Semua --}}
-    <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
-        <h5 class="text-muted mb-0">
-            <i class="bi bi-grid-3x3-gap"></i> Tampilan Grid (BukuCard Component)
-        </h5>
-        <label for="select-all" class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer;">
-            <input class="form-check-input m-0" type="checkbox" id="select-all"
-                style="width: 1.1rem; height: 1.1rem; cursor: pointer;">
-            <span class="text-muted small">Pilih Semua</span>
-        </label>
-    </div>
-
-    {{-- Form Bulk Delete — DILUAR grid, tidak membungkus buku-card --}}
-    <form id="form-bulk-delete" action="{{ route('buku.bulk-delete') }}" method="POST">
-        @csrf
-        {{-- Checkbox ID akan diisi oleh JavaScript saat submit --}}
-        <div id="hidden-ids"></div>
-    </form>
-
-    {{-- Grid Buku — TERPISAH dari form bulk delete --}}
-    <div class="row">
-        @forelse($bukus as $buku)
-            <div class="col-md-4 col-lg-3 mb-4">
-                <div class="position-relative">
-
-                    {{-- Checkbox pill pojok kiri atas --}}
-                    <label for="buku-{{ $buku->id }}"
-                        class="position-absolute top-0 start-0 z-3 m-2
-                           d-flex align-items-center gap-1
-                           bg-white rounded-pill px-2 py-1 shadow-sm
-                           text-muted small"
-                        style="cursor: pointer; border: 1px solid #dee2e6;">
-                        <input class="form-check-input checkbox-buku m-0" type="checkbox" data-id="{{ $buku->id }}"
-                            id="buku-{{ $buku->id }}" style="width: 1rem; height: 1rem; cursor: pointer;">
-                        <span>Pilih</span>
-                    </label>
-
-                    <x-buku-card :buku="$buku" />
-                </div>
-            </div>
-        @empty
-            <div class="col-12">
-                <div class="alert alert-info">Tidak ada buku untuk ditampilkan.</div>
-            </div>
-        @endforelse
-    </div>
-
-    @if ($bukus->count() > 0)
-        <div class="text-center mt-4">
-            <p class="text-muted">
-                Menampilkan {{ $bukus->count() }} buku
-                @isset($kategori)
-                    dari kategori <strong>{{ $kategori }}</strong>
-                @endisset
-            </p>
-        </div>
-    @endif
-
 @endsection
 
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-
             const selectAll = document.getElementById('select-all');
+            const btnBulk = document.getElementById('btn-bulk-delete');
+            const formBulk = document.getElementById('form-bulk-delete');
+            const hiddenIds = document.getElementById('hidden-ids');
 
-            // ===== SELECT ALL =====
-            selectAll.addEventListener('change', function() {
-                document.querySelectorAll('.checkbox-buku').forEach(cb => {
-                    cb.checked = this.checked;
-                });
-                updateJumlahTerpilih();
+            function selectedBoxes() {
+                return document.querySelectorAll('.checkbox-buku:checked');
+            }
+
+            function updateSelectedState() {
+                const total = selectedBoxes().length;
+                document.getElementById('jumlah-terpilih').textContent = total;
+                btnBulk.classList.toggle('d-none', total === 0);
+            }
+
+            selectAll?.addEventListener('change', function() {
+                document.querySelectorAll('.checkbox-buku').forEach(cb => cb.checked = this.checked);
+                updateSelectedState();
             });
 
-            // ===== PANTAU SETIAP CHECKBOX BUKU =====
             document.querySelectorAll('.checkbox-buku').forEach(cb => {
-                cb.addEventListener('change', function() {
-                    const adaYangTidakCentang = document.querySelectorAll(
-                        '.checkbox-buku:not(:checked)').length;
-                    selectAll.checked = adaYangTidakCentang === 0;
-                    updateJumlahTerpilih();
-                });
+                cb.addEventListener('change', updateSelectedState);
             });
 
-            // ===== UPDATE COUNTER & TOMBOL =====
-            function updateJumlahTerpilih() {
-                const terpilih = document.querySelectorAll('.checkbox-buku:checked').length;
-                document.getElementById('jumlah-terpilih').textContent = terpilih;
-
-                const btnBulk = document.getElementById('btn-bulk-delete');
-                if (terpilih > 0) {
-                    btnBulk.classList.remove('d-none');
-                } else {
-                    btnBulk.classList.add('d-none');
-                }
-            }
-
-            // ===== KONFIRMASI BULK DELETE =====
-            window.konfirmasiBulkDelete = function() {
-                const jumlah = document.querySelectorAll('.checkbox-buku:checked').length;
-
-                Swal.fire({
-                    title: 'Konfirmasi Hapus',
-                    text: `Anda akan menghapus ${jumlah} buku sekaligus. Tindakan ini tidak bisa dibatalkan!`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Ya, Hapus Semua!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-
-                        // Ambil semua ID yang dicentang
-                        const hiddenIds = document.getElementById('hidden-ids');
-                        hiddenIds.innerHTML = ''; // kosongkan dulu
-
-                        // Masukkan ID ke dalam form sebagai hidden input
-                        document.querySelectorAll('.checkbox-buku:checked').forEach(cb => {
-                            const input = document.createElement('input');
-                            input.type = 'hidden';
-                            input.name = 'buku_ids[]';
-                            input.value = cb.dataset.id;
-                            hiddenIds.appendChild(input);
-                        });
-
-                        // Submit form
-                        document.getElementById('form-bulk-delete').submit();
-                    }
+            btnBulk?.addEventListener('click', function() {
+                hiddenIds.innerHTML = '';
+                selectedBoxes().forEach(cb => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'buku_ids[]';
+                    input.value = cb.dataset.id;
+                    hiddenIds.appendChild(input);
                 });
-            }
-
+                formBulk.requestSubmit();
+            });
         });
     </script>
 @endpush
-

@@ -1,104 +1,89 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@yield('title', 'Perpustakaan') - Sistem Perpustakaan</title>
-    
-    {{-- Bootstrap CSS --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    {{-- Bootstrap Icons --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- SweetAlert2 CSS --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.min.css">
-    
-    {{-- Custom CSS --}}
-    <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        main {
-            flex: 1;
-        }
-        
-        .navbar-brand {
-            font-weight: bold;
-            font-size: 1.3rem;
-        }
-        
-        footer {
-            margin-top: auto;
-            background-color: #f8f9fa;
-            padding: 2rem 0;
-        }
-    </style>
-    
+    <title>@yield('title', config('app.name', 'Perpustakaan'))</title>
+
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
 <body>
-    {{-- Navbar --}}
-    @include('layouts.navbar')
-    
-    {{-- Main Content --}}
-    <main class="py-4">
-        <div class="container">
-            {{-- Alert Messages --}}
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check-circle-fill"></i>
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-            
-            @if (session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-            
-            @if (session('info'))
-                <div class="alert alert-info alert-dismissible fade show" role="alert">
-                    <i class="bi bi-info-circle-fill"></i>
-                    {{ session('info') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-            
-            {{-- Page Content --}}
-            @yield('content')
+    <div class="app-shell">
+        @include('layouts.navigation')
+
+        <div class="app-main">
+            @auth
+                <header class="topbar">
+                    <div class="d-flex align-items-center gap-3">
+                        <button class="btn btn-icon d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar" aria-label="Buka menu">
+                            <i class="bi bi-list"></i>
+                        </button>
+                        <div>
+                            <p class="eyebrow mb-1">{{ now()->translatedFormat('l, d F Y') }}</p>
+                            <h1 class="topbar-title">@yield('title', 'Sistem Perpustakaan')</h1>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="btn user-menu dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="avatar">{{ Str::of(Auth::user()->name)->substr(0, 1)->upper() }}</span>
+                            <span class="d-none d-sm-inline">{{ Auth::user()->name }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                            <li>
+                                <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                                    <i class="bi bi-person me-2"></i> Profile
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}" data-loading="true">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </header>
+            @endauth
+
+            <main class="content-wrap">
+                @if (session('success') || session('error') || session('warning') || session('info'))
+                    <div class="toast-message d-none"
+                        data-type="{{ session('success') ? 'success' : (session('error') ? 'error' : (session('warning') ? 'warning' : 'info')) }}"
+                        data-message="{{ session('success') ?? session('error') ?? session('warning') ?? session('info') }}">
+                    </div>
+                @endif
+
+                @isset($header)
+                    <div class="mb-4">
+                        {{ $header }}
+                    </div>
+                @endisset
+
+                @isset($slot)
+                    {{ $slot }}
+                @else
+                    @yield('content')
+                @endisset
+            </main>
+
+            @includeIf('layouts.footer')
         </div>
-    </main>
-    
-    {{-- Footer --}}
-    @include('layouts.footer')
-    
-    {{-- Bootstrap JS --}}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    {{-- Auto-hide alerts after 5 seconds --}}
-    @if (session('success') || session('error') || session('info') || session('warning'))
-        <script>
-            setTimeout(function() {
-                let alerts = document.querySelectorAll('.alert');
-                alerts.forEach(function(alert) {
-                    let bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                });
-            }, 5000);
-        </script>
-    @endif
-    
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @stack('scripts')
-    {{-- SweetAlert2 JS --}}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.all.min.js"></script>
 </body>
 </html>

@@ -6,14 +6,23 @@ use Illuminate\Http\Request;
 use App\Models\Buku;
 use App\Http\Requests\StoreBukuRequest;
 use App\Http\Requests\UpdateBukuRequest;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\BukuExport;
  
 // Controller for Buku resources
  
 class BukuController extends Controller
 {
-
+    public function export()
+{
+    return Excel::download(
+        new BukuExport,
+        'data_buku_' . date('Y-m-d') . '.xlsx'
+    );
+}
     public function bulkDelete(Request $request)
     {
+        
         $request->validate([
             'buku_ids' => 'required|array|min:1',
             'buku_ids.*' => 'integer|exists:buku,id',
@@ -42,16 +51,34 @@ class BukuController extends Controller
         $totalBuku = Buku::count();
         $bukuTersedia = Buku::where('stok', '>', 0)->count();
         $bukuHabis = Buku::where('stok', 0)->count();
+        $kategoriList = Buku::query()
+            ->select('kategori')
+            ->distinct()
+            ->orderBy('kategori')
+            ->pluck('kategori')
+            ->filter()
+            ->values();
+        $tahunList = Buku::query()
+            ->select('tahun_terbit')
+            ->distinct()
+            ->orderByDesc('tahun_terbit')
+            ->pluck('tahun_terbit')
+            ->filter()
+            ->values();
         
         // Return view dengan data
         return view('buku.index', compact(
             'bukus',
             'totalBuku',
             'bukuTersedia',
-            'bukuHabis'
+            'bukuHabis',
+            'kategoriList',
+            'tahunList'
         ));
     }
  
+
+    
     /**
      * Show the form for creating a new resource.
      */
@@ -176,11 +203,11 @@ class BukuController extends Controller
         });
 
         $query->when($request->filled('ketersediaan'), function ($q) use ($request) {
-            if ($request->ketersediaan === 'Tersedia') {
+            if ($request->ketersediaan === 'tersedia') {
                 $q->where('stok', '>', 0);
             }
 
-            if ($request->ketersediaan === 'Habis') {
+            if ($request->ketersediaan === 'habis') {
                 $q->where('stok', '=', 0);
             }
         });
@@ -191,23 +218,28 @@ class BukuController extends Controller
         $bukuTersedia = $bukus->where('stok', '>', 0)->count();
         $bukuHabis = $bukus->where('stok', 0)->count();
 
-        $kategoriOptions = [
-            'Programming',
-            'Database',
-            'Web Design',
-            'Networking',
-            'Data Science',
-        ];
-
-        $tahunOptions = range(2020, 2026);
+        $kategoriList = Buku::query()
+            ->select('kategori')
+            ->distinct()
+            ->orderBy('kategori')
+            ->pluck('kategori')
+            ->filter()
+            ->values();
+        $tahunList = Buku::query()
+            ->select('tahun_terbit')
+            ->distinct()
+            ->orderByDesc('tahun_terbit')
+            ->pluck('tahun_terbit')
+            ->filter()
+            ->values();
 
         return view('buku.index', compact(
             'bukus',
             'totalBuku',
             'bukuTersedia',
             'bukuHabis',
-            'kategoriOptions',
-            'tahunOptions'
+            'kategoriList',
+            'tahunList'
         ));
     }
     
@@ -221,13 +253,29 @@ class BukuController extends Controller
         $totalBuku = $bukus->count();
         $bukuTersedia = $bukus->where('stok', '>', 0)->count();
         $bukuHabis = $bukus->where('stok', 0)->count();
+        $kategoriList = Buku::query()
+            ->select('kategori')
+            ->distinct()
+            ->orderBy('kategori')
+            ->pluck('kategori')
+            ->filter()
+            ->values();
+        $tahunList = Buku::query()
+            ->select('tahun_terbit')
+            ->distinct()
+            ->orderByDesc('tahun_terbit')
+            ->pluck('tahun_terbit')
+            ->filter()
+            ->values();
         
         return view('buku.index', compact(
             'bukus',
             'totalBuku',
             'bukuTersedia',
             'bukuHabis',
-            'kategori'
+            'kategori',
+            'kategoriList',
+            'tahunList'
         ));
     }
 }

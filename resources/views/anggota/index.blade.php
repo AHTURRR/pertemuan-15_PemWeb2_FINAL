@@ -1,203 +1,135 @@
 @extends('layouts.app')
- 
+
 @section('title', 'Daftar Anggota')
- 
+
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>
-        <i class="bi bi-people"></i>
-        Daftar Anggota
-    </h1>
-    <div>
-        <a href="{{ route('anggota.export') }}"
-            class="btn btn-success">
-            <i class="bi bi-file-earmark-excel"></i>
-            Export Excel
-        </a>
-        <a href="{{ route('anggota.create') }}" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Tambah Anggota
-        </a>
+    <x-page-header
+        title="Daftar Anggota"
+        subtitle="Kelola data anggota aktif dan nonaktif untuk proses peminjaman."
+        icon="bi-people"
+        :breadcrumbs="[
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'Anggota'],
+        ]"
+    >
+        <x-slot name="actions">
+            <a href="{{ route('anggota.export') }}" class="btn btn-success" data-loading-link>
+                <i class="bi bi-file-earmark-excel"></i> Export
+            </a>
+            <a href="{{ route('anggota.create') }}" class="btn btn-primary">
+                <i class="bi bi-person-plus"></i> Tambah Anggota
+            </a>
+        </x-slot>
+    </x-page-header>
+
+    <div class="stat-grid">
+        <x-stat-card label="Total Anggota" :value="$totalAnggota" icon="bi-people" variant="primary" />
+        <x-stat-card label="Anggota Aktif" :value="$anggotaAktif" icon="bi-person-check" variant="success" />
+        <x-stat-card label="Anggota Nonaktif" :value="$anggotaNonaktif" icon="bi-person-x" variant="warning" />
+        <x-stat-card label="Data Ditampilkan" :value="$anggotas->count()" icon="bi-table" variant="info" />
     </div>
-</div>
- 
-{{-- Statistik --}}
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card border-success">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h6 class="text-muted">Total Anggota</h6>
-                        <h2>{{ $totalAnggota }}</h2>
-                    </div>
-                    <i class="bi bi-people-fill text-success" style="font-size: 3rem;"></i>
-                </div>
+
+    <div class="app-card">
+        <form action="{{ route('anggota.search') }}" method="GET" class="row g-3 align-items-end" data-no-loading>
+            <div class="col-lg-4">
+                <label for="keyword" class="form-label">Cari Anggota</label>
+                <input type="text" id="keyword" name="keyword" class="form-control"
+                    placeholder="Cari nama, email, atau telepon..." value="{{ request('keyword') }}">
+                <div class="form-text">Gunakan nama, email, atau nomor telepon.</div>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <label for="jenis_kelamin" class="form-label">Gender</label>
+                <select name="jenis_kelamin" id="jenis_kelamin" class="form-select">
+                    <option value="">Semua</option>
+                    <option value="Laki-laki" @selected(request('jenis_kelamin') == 'Laki-laki')>Laki-laki</option>
+                    <option value="Perempuan" @selected(request('jenis_kelamin') == 'Perempuan')>Perempuan</option>
+                </select>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <label for="status" class="form-label">Status</label>
+                <select name="status" id="status" class="form-select">
+                    <option value="">Semua</option>
+                    <option value="Aktif" @selected(request('status') == 'Aktif')>Aktif</option>
+                    <option value="Nonaktif" @selected(request('status') == 'Nonaktif')>Nonaktif</option>
+                </select>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <label for="pekerjaan" class="form-label">Pekerjaan</label>
+                <input type="text" id="pekerjaan" name="pekerjaan" class="form-control" placeholder="Opsional" value="{{ request('pekerjaan') }}">
+            </div>
+            <div class="col-lg-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-fill">
+                    <i class="bi bi-search"></i> Cari
+                </button>
+                <a href="{{ route('anggota.index') }}" class="btn btn-outline-secondary" data-bs-toggle="tooltip" title="Reset filter">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="app-card table-card">
+        <div class="table-toolbar">
+            <div>
+                <h3 class="h5 fw-bold mb-1">Data Anggota</h3>
+                <p class="text-muted mb-0">Menampilkan {{ $anggotas->count() }} data anggota.</p>
+            </div>
+            <div class="input-group search-box">
+                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                <input type="search" class="form-control" placeholder="Cari cepat di tabel..." data-table-search="#anggotaTable">
             </div>
         </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card border-primary">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h6 class="text-muted">Anggota Aktif</h6>
-                        <h2>{{ $anggotaAktif }}</h2>
-                    </div>
-                    <i class="bi bi-person-check-fill text-primary" style="font-size: 3rem;"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card border-secondary">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h6 class="text-muted">Anggota Nonaktif</h6>
-                        <h2>{{ $anggotaNonaktif }}</h2>
-                    </div>
-                    <i class="bi bi-person-x-fill text-secondary" style="font-size: 3rem;"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<form action="{{ route('anggota.search') }}" method="GET" class="row g-3 mb-3">
-
-    <div class="col-md-3">
-        <input type="text"
-               name="keyword"
-               class="form-control"
-               placeholder="Cari nama, email, telepon..."
-               value="{{ request('keyword') }}">
-    </div>
-
-    <div class="col-md-2">
-        <select name="jenis_kelamin" class="form-select">
-            <option value="">Semua Gender</option>
-            <option value="Laki-laki" {{ request('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
-                Laki-laki
-            </option>
-            <option value="Perempuan" {{ request('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
-                Perempuan
-            </option>
-        </select>
-    </div>
-
-    <div class="col-md-2">
-        <select name="status" class="form-select">
-            <option value="">Semua Status</option>
-            <option value="Aktif" {{ request('status') == 'Aktif' ? 'selected' : '' }}>
-                Aktif
-            </option>
-            <option value="Nonaktif" {{ request('status') == 'Nonaktif' ? 'selected' : '' }}>
-                Nonaktif
-            </option>
-        </select>
-    </div>
-
-    <div class="col-md-2">
-        <input type="text"
-               name="pekerjaan"
-               class="form-control"
-               placeholder="Pekerjaan"
-               value="{{ request('pekerjaan') }}">
-    </div>
-
-    <div class="col-md-3">
-        <button type="submit" class="btn btn-primary">
-            Cari
-        </button>
-
-        <a href="{{ route('anggota.index') }}" class="btn btn-secondary">
-            Reset
-        </a>
-    </div>
-
-</form>
-
-
-{{-- Tabel Anggota --}}
-<div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>No</th>
-                        <th>Kode</th>
-                        <th>Nama</th>
-                        <th>Email</th>
-                        <th>Telepon</th>
-                        <th>Jenis Kelamin</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($anggotas as $anggota)
+        @if ($anggotas->count())
+            <div class="table-responsive">
+                <table class="table align-middle" id="anggotaTable">
+                    <thead>
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>
-                                <code>{{ $anggota->kode_anggota }}</code>
-                            </td>
-                            <td>
-                                <strong>{{ $anggota->nama }}</strong>
-                            </td>
-                            <td>
-                                <i class="bi bi-envelope"></i>
-                                {{ $anggota->email }}
-                            </td>
-                            <td>
-                                <i class="bi bi-telephone"></i>
-                                {{ $anggota->telepon }}
-                            </td>
-                            <td>
-                                @if ($anggota->jenis_kelamin == 'Laki-laki')
-                                    <i class="bi bi-gender-male text-primary"></i>
-                                @else
-                                    <i class="bi bi-gender-female text-danger"></i>
-                                @endif
-                                {{ $anggota->jenis_kelamin }}
-                            </td>
-                            <td>
-                                @if ($anggota->status == 'Aktif')
-                                    <span class="badge bg-success">
-                                        <i class="bi bi-check-circle"></i> Aktif
-                                    </span>
-                                @else
-                                    <span class="badge bg-secondary">
-                                        <i class="bi bi-x-circle"></i> Nonaktif
-                                    </span>
-                                @endif
-                            </td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <a href="{{ route('anggota.show', $anggota->id) }}" 
-                                       class="btn btn-sm btn-info text-white"
-                                       title="Detail">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <a href="{{ route('anggota.edit', $anggota->id) }}" 
-                                       class="btn btn-sm btn-warning"
-                                       title="Edit">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                </div>
-                            </td>
+                            <th>Anggota</th>
+                            <th>Email</th>
+                            <th>Telepon</th>
+                            <th>Gender</th>
+                            <th>Status</th>
+                            <th class="text-end">Aksi</th>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="text-center text-muted">
-                                <i class="bi bi-inbox"></i>
-                                Tidak ada data anggota
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach ($anggotas as $anggota)
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ $anggota->nama }}</div>
+                                    <div class="text-muted small"><code>{{ $anggota->kode_anggota }}</code></div>
+                                </td>
+                                <td>{{ $anggota->email }}</td>
+                                <td>{{ $anggota->telepon }}</td>
+                                <td>
+                                    <i class="bi {{ $anggota->jenis_kelamin === 'Laki-laki' ? 'bi-gender-male text-primary' : 'bi-gender-female text-danger' }}"></i>
+                                    {{ $anggota->jenis_kelamin }}
+                                </td>
+                                <td>{!! $anggota->status_badge !!}</td>
+                                <td class="text-end">
+                                    <div class="btn-group" role="group" aria-label="Aksi anggota">
+                                        <a href="{{ route('anggota.show', $anggota->id) }}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ route('anggota.edit', $anggota->id) }}" class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <x-empty-state
+                title="Belum ada data anggota"
+                message="Tambahkan anggota agar proses peminjaman dapat dilakukan."
+                icon="bi-person-plus"
+                :actionUrl="route('anggota.create')"
+                actionLabel="Tambah Anggota"
+            />
+        @endif
     </div>
-</div>
 @endsection

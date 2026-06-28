@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
-// use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic test example.
      */
@@ -15,12 +18,14 @@ class ExampleTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        $response->assertSee('Daftar Kategori Buku');
+        $response->assertSee('Kelola buku, anggota, dan transaksi perpustakaan dengan lebih mudah.');
     }
 
     public function test_kategori_page_can_be_visited(): void
     {
-        $response = $this->get('/kategori');
+        $response = $this
+            ->actingAs(User::factory()->create())
+            ->get('/kategori');
 
         $response->assertStatus(200);
         $response->assertSee('Daftar Kategori Buku');
