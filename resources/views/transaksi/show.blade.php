@@ -37,12 +37,32 @@
             </a>
         </x-slot>
     </x-page-header>
+    @if ($isDipinjam && $terlambat > 0)
+<div class="alert alert-danger d-flex align-items-start gap-3 shadow-sm border-0 mb-4">
+    <i class="bi bi-exclamation-triangle-fill fs-2"></i>
+    <div>
+        <h5 class="mb-1">
+            Buku Terlambat Dikembalikan
+        </h5>
+        <p class="mb-1">
+            Buku ini telah melewati batas pengembalian selama
+            <strong>{{ $terlambat }} hari</strong>
+        </p>
+        <p class="mb-0">
+            Denda saat ini sebesar
+            <strong>
+                Rp {{ number_format($transaksi->nominal_denda,0,',','.') }}
+            </strong>
+        </p>
+    </div>
+</div>
+@endif
 
     <div class="stat-grid">
         <x-stat-card label="Status" :value="$terlambat && $isDipinjam ? 'Terlambat' : $transaksi->status" icon="bi-info-circle" :variant="$terlambat && $isDipinjam ? 'danger' : ($isDipinjam ? 'warning' : 'success')" />
         <x-stat-card label="Lama Pinjam" :value="$transaksi->durasi_peminjaman . ' hari'" icon="bi-hourglass-split" variant="info" />
         <x-stat-card label="Keterlambatan" :value="$terlambat . ' hari'" icon="bi-exclamation-triangle" :variant="$terlambat > 0 ? 'danger' : 'success'" />
-        <x-stat-card label="Denda" :value="'Rp ' . number_format($transaksi->denda ?? 0, 0, ',', '.')" icon="bi-cash-coin" variant="warning" />
+        <x-stat-card label="Denda" :value="'Rp ' . number_format($transaksi->nominal_denda, 0, ',', '.')" icon="bi-cash-coin" variant="warning" />
     </div>
 
     <div class="row g-4">

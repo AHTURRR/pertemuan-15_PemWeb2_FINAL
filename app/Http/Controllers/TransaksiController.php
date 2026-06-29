@@ -8,6 +8,8 @@ use App\Models\Buku;
 use App\Models\Anggota;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+
  
 class TransaksiController extends Controller
 {
@@ -132,6 +134,76 @@ class TransaksiController extends Controller
                              ->with('error', 'Gagal mengembalikan buku: ' . $e->getMessage());
         }
     }
+
+    public function laporan(Request $request)
+    {
+        $request->validate($this->laporanRules());
+
+        $transaksis = $this->laporanQuery($request)->get();
+        $totalTransaksi = $transaksis->count();
+        $totalDenda = $transaksis->sum(fn ($transaksi) => $transaksi->nominal_denda);
+        $anggotas = Anggota::orderBy('nama')->get();
+
+        return view('transaksi.laporan', compact(
+            'transaksis',
+            'anggotas',
+            'totalTransaksi',
+            'totalDenda'
+        ));
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $request->validate($this->laporanRules());
+
+        $transaksis = $this->laporanQuery($request)->get();
+        $totalTransaksi = $transaksis->count();
+        $totalDenda = $transaksis->sum(fn ($transaksi) => $transaksi->nominal_denda);
+
+        $pdf = Pdf::loadView(
+            'transaksi.pdf',
+            compact(
+                'transaksis',
+                'totalTransaksi',
+                'totalDenda'
+            )
+        );
+
+        return $pdf->stream('laporan-transaksi.pdf');
+    }
+
+    private function laporanRules()
+    {
+        return [
+            'dari' => ['nullable', 'date'],
+            'sampai' => ['nullable', 'date'],
+            'status' => ['nullable', 'in:Semua,Dipinjam,Dikembalikan'],
+            'anggota' => ['nullable', 'exists:anggota,id'],
+        ];
+    }
+
+    private function laporanQuery(Request $request)
+    {
+        $query = Transaksi::with(['anggota', 'buku']);
+
+        if ($request->filled('dari')) {
+            $query->whereDate('tanggal_pinjam', '>=', $request->dari);
+        }
+
+        if ($request->filled('sampai')) {
+            $query->whereDate('tanggal_pinjam', '<=', $request->sampai);
+        }
+
+        if ($request->filled('status') && $request->status !== 'Semua') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('anggota')) {
+            $query->where('anggota_id', $request->anggota);
+        }
+
+        return $query->orderByDesc('tanggal_pinjam');
+    }
  
     /**
      * Generate kode transaksi otomatis.
@@ -155,11 +227,10 @@ class TransaksiController extends Controller
      */
     private function hitungDenda($transaksi, $tanggalDikembalikan)
     {
-        $hariTerlambat = $transaksi->tanggal_kembali->diffInDays($tanggalDikembalikan, false);
+        $hariTerlambat = (int) $transaksi->tanggal_kembali->diffInDays($tanggalDikembalikan, false);
         
         if ($hariTerlambat > 0) {
-            // Denda Rp 5.000 per hari
-            return $hariTerlambat * 5000;
+            return $hariTerlambat * Transaksi::DENDA_PER_HARI;
         }
         
         return 0;

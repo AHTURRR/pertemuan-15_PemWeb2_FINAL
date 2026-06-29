@@ -158,6 +158,73 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-4">
+
+    <div class="card border-danger shadow">
+
+        <div class="card-header bg-danger text-white">
+
+            <strong>Buku Terlambat</strong>
+
+        </div>
+
+        <div class="card-body">
+
+            <h2 class="text-danger">
+
+                {{ $jumlahTerlambat }}
+
+            </h2>
+
+            @if($jumlahTerlambat)
+
+                <hr>
+
+                @foreach($terlambat as $item)
+
+                    <div class="mb-2">
+
+                        <strong>
+
+                            {{ $item->anggota->nama }}
+
+                        </strong>
+
+                        <br>
+
+                        <small>
+
+                            {{ $item->buku->judul }}
+
+                        </small>
+
+                        <br>
+
+                        <span class="badge bg-danger">
+
+                            {{ $item->terlambat }} Hari
+
+                        </span>
+
+                    </div>
+
+                @endforeach
+
+            @else
+
+                <span class="text-success">
+
+                    Tidak ada keterlambatan.
+
+                </span>
+
+            @endif
+
+        </div>
+
+    </div>
+
+</div>
         </div>
     </div>
 </x-app-layout>

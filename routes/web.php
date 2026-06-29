@@ -77,11 +77,18 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
+    Route::get('/transaksi/laporan', [TransaksiController::class, 'laporan'])
+        ->name('transaksi.laporan');
+
+    Route::get('/transaksi/laporan/pdf', [TransaksiController::class, 'exportPdf'])
+        ->name('transaksi.laporan.pdf');
+
     Route::resource('transaksi', TransaksiController::class)
         ->only(['index', 'create', 'store', 'show']);
 
     Route::put('/transaksi/{id}/kembalikan', [TransaksiController::class, 'kembalikan'])
         ->name('transaksi.kembalikan');
+
 
     /*
     |--------------------------------------------------------------------------

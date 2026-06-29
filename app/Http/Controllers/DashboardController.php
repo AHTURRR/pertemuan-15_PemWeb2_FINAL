@@ -5,11 +5,27 @@ namespace App\Http\Controllers;
 use App\Models\Anggota;
 use App\Models\Buku;
 use App\Models\Transaksi;
+use Carbon\Carbon;
+
 
 class DashboardController extends Controller
 {
     public function index()
     {
+        $terlambat = Transaksi::with(['anggota','buku'])
+        ->where('status', 'Dipinjam')
+        ->whereDate('tanggal_kembali', '<', Carbon::today())
+        ->orderBy('tanggal_kembali')
+        ->get();
+
+    $jumlahTerlambat = $terlambat->count();
+
+    return view('dashboard', compact(
+        'terlambat',
+        'jumlahTerlambat'
+    ));
+    }
+}
         $statistikBuku = [
             'total_buku' => Buku::count(),
             'buku_tersedia' => Buku::where('stok', '>', 0)->count(),
@@ -66,5 +82,3 @@ class DashboardController extends Controller
             'anggotaTerbaru',
             'aktivitasTerbaru'
         ));
-    }
-}

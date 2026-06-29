@@ -9,6 +9,8 @@ use Carbon\Carbon;
 class Transaksi extends Model
 {
     use HasFactory;
+
+    public const DENDA_PER_HARI = 5000;
  
     protected $fillable = [
         'kode_transaksi',
@@ -26,6 +28,7 @@ class Transaksi extends Model
         'tanggal_pinjam' => 'date',
         'tanggal_kembali' => 'date',
         'tanggal_dikembalikan' => 'date',
+        'denda' => 'integer',
     ];
  
     // Relationship ke Anggota (belongsTo)
@@ -46,24 +49,37 @@ class Transaksi extends Model
         if ($this->tanggal_dikembalikan) {
             return $this->tanggal_pinjam->diffInDays($this->tanggal_dikembalikan);
         }
-        return $this->tanggal_pinjam->diffInDays(now());
+        return (int) $this->tanggal_pinjam->diffInDays(today());
     }
  
     // Accessor untuk cek terlambat (hari)
     public function getTerlambatAttribute()
     {
+        if (!$this->tanggal_kembali) {
+            return 0;
+        }
+
         if ($this->status == 'Dikembalikan') {
             if ($this->tanggal_dikembalikan > $this->tanggal_kembali) {
-                return $this->tanggal_kembali->diffInDays($this->tanggal_dikembalikan);
+                return (int) $this->tanggal_kembali->diffInDays($this->tanggal_dikembalikan);
             }
             return 0;
         }
         
-        if (now() > $this->tanggal_kembali) {
-            return $this->tanggal_kembali->diffInDays(now());
+        if (today() > $this->tanggal_kembali) {
+            return (int) $this->tanggal_kembali->diffInDays(today());
         }
         
         return 0;
+    }
+
+    public function getNominalDendaAttribute()
+    {
+        if ($this->status === 'Dipinjam') {
+            return $this->terlambat * self::DENDA_PER_HARI;
+        }
+
+        return (int) ($this->denda ?? 0);
     }
  
     // Accessor untuk status badge HTML

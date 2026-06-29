@@ -13,6 +13,9 @@
         ]"
     >
         <x-slot name="actions">
+            <a href="{{ route('transaksi.laporan') }}" class="btn btn-outline-primary">
+                <i class="bi bi-file-earmark-bar-graph"></i> Laporan Transaksi
+            </a>
             <a href="{{ route('transaksi.create') }}" class="btn btn-primary">
                 <i class="bi bi-bookmark-plus"></i> Peminjaman Baru
             </a>
@@ -67,8 +70,12 @@
                                 <td>{{ $transaksi->tanggal_pinjam->format('d M Y') }}</td>
                                 <td>{{ $transaksi->tanggal_kembali->format('d M Y') }}</td>
                                 <td>
-                                    @if ($terlambat)
-                                        <span class="badge bg-danger">Terlambat</span>
+                                    @if($transaksi->status=='Dipinjam' && $transaksi->terlambat>0)
+                                        <span class="badge bg-danger">
+                                            Terlambat
+                                        {{ $transaksi->terlambat }}
+                                            Hari
+                                        </span>
                                     @else
                                         {!! $transaksi->status_badge !!}
                                     @endif
