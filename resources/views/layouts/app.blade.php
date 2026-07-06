@@ -32,35 +32,37 @@
                         </div>
                     </div>
 
-                    <form class="d-flex" action="{{ route('search') }}" method="GET">
-                        <input class="form-control me-2" type="search" name="q"
-                                placeholder="Cari buku, anggota, transaksi..." value="{{ request('q') }}">
-                        <button class="btn btn-outline-light" type="submit">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </form>
+                    <div class="d-flex align-items-center gap-3 flex-grow-1 justify-content-end ms-4" style="max-width: 600px;">
+                        <form class="d-flex flex-grow-1" action="{{ route('search') }}" method="GET">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0" style="border-radius: 999px 0 0 999px; border-color: var(--border);"><i class="bi bi-search text-muted"></i></span>
+                                <input class="form-control border-start-0 ps-0" style="border-radius: 0 999px 999px 0; border-color: var(--border); box-shadow: none;" type="search" name="q"
+                                       placeholder="Cari buku, anggota, transaksi..." value="{{ request('q') }}">
+                            </div>
+                        </form>
 
-                    <div class="dropdown">
-                        <button class="btn user-menu dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span class="avatar">{{ Str::of(Auth::user()->name)->substr(0, 1)->upper() }}</span>
-                            <span class="d-none d-sm-inline">{{ Auth::user()->name }}</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                            <li>
-                                <a class="dropdown-item" href="{{ route('profile.edit') }}">
-                                    <i class="bi bi-person me-2"></i> Profile
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}" data-loading="true">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="bi bi-box-arrow-right me-2"></i> Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
+                        <div class="dropdown">
+                            <button class="btn user-menu dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="avatar">{{ Str::of(Auth::user()->name)->substr(0, 1)->upper() }}</span>
+                                <span class="d-none d-sm-inline">{{ Auth::user()->name }}</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                                        <i class="bi bi-person me-2"></i> Profile
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}" data-loading="true">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </header>
             @endauth
