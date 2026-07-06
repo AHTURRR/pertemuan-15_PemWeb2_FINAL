@@ -16,7 +16,6 @@ class Buku extends Model
      * @var string
      */
     protected $table = 'buku';
-    protected $guarded = ['id']; // atau $fillable yang sudah Anda buat
 
     // ==========================================
     // 1. ACCESSOR

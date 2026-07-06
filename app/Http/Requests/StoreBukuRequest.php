@@ -73,8 +73,8 @@ class StoreBukuRequest extends FormRequest
         {
             $validator->after(function ($validator) {
                 if (
-                    $this->kategori === 'Programming' &&
-                    $this->bahasa !== 'Inggris'
+                    $this->input('kategori') === 'Programming' &&
+                    $this->input('bahasa') !== 'Inggris'
                 ) {
                     $validator->errors()->add(
                         'bahasa',
@@ -83,8 +83,8 @@ class StoreBukuRequest extends FormRequest
                 }
     
                 if (
-                    $this->tahun_terbit < 2000 &&
-                    $this->stok > 5
+                    $this->input('tahun_terbit') < 2000 &&
+                    $this->input('stok') > 5
                 ) {
                     $validator->errors()->add(
                         'stok',

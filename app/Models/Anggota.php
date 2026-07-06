@@ -16,7 +16,6 @@ class Anggota extends Model
      * @var string
      */
     protected $table = 'anggota';
-    protected $guarded = ['id']; // atau $fillable
 
     // ==========================================
     // 1. ACCESSOR

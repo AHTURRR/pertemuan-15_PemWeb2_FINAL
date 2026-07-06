@@ -13,7 +13,7 @@
         ]"
     >
         <x-slot name="actions">
-            <a href="{{ route('transaksi.laporan') }}" class="btn btn-outline-primary">
+            <a href="{{ route('laporan.index') }}" class="btn btn-outline-primary">
                 <i class="bi bi-file-earmark-bar-graph"></i> Laporan Transaksi
             </a>
             <a href="{{ route('transaksi.create') }}" class="btn btn-primary">

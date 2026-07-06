@@ -84,8 +84,105 @@
                         </div>
                     </div>
                 </div>
+            </div> {{-- Menutup app-card Profil Anggota --}}
+
+            {{-- Statistik Peminjaman --}}
+            <div class="row g-3 mb-4 mt-1">
+                <div class="col-md-6">
+                    <div class="stat-card stat-primary h-100 mb-0 shadow-sm">
+                        <div>
+                            <p>Total Peminjaman</p>
+                            <h3>{{ $totalPinjam }} Kali</h3>
+                        </div>
+                        <span class="stat-icon"><i class="bi bi-journal-check"></i></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="stat-card stat-danger h-100 mb-0 shadow-sm">
+                        <div>
+                            <p>Akumulasi Denda</p>
+                            <h3>Rp {{ number_format($totalDenda, 0, ',', '.') }}</h3>
+                        </div>
+                        <span class="stat-icon"><i class="bi bi-cash-coin"></i></span>
+                    </div>
+                </div>
             </div>
-        </div>
+
+            {{-- Riwayat Transaksi --}}
+            <div class="app-card mb-4">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                    <h4 class="h5 fw-bold mb-0 text-dark"><i class="bi bi-clock-history text-primary me-2"></i> Riwayat Transaksi</h4>
+                    
+                    {{-- Filter Status --}}
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Filter Status">
+                        <a href="{{ route('anggota.show', [$anggota->id]) }}" class="btn {{ !request('status') ? 'btn-primary' : 'btn-outline-primary' }}">Semua</a>
+                        <a href="{{ route('anggota.show', [$anggota->id, 'status' => 'Dipinjam']) }}" class="btn {{ request('status') == 'Dipinjam' ? 'btn-primary' : 'btn-outline-primary' }}">Dipinjam</a>
+                        <a href="{{ route('anggota.show', [$anggota->id, 'status' => 'Dikembalikan']) }}" class="btn {{ request('status') == 'Dikembalikan' ? 'btn-primary' : 'btn-outline-primary' }}">Dikembalikan</a>
+                    </div>
+                </div>
+
+                @forelse($transaksis as $trx)
+                    <div class="p-3 rounded-4 bg-light mb-3">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
+                            <div>
+                                <span class="fw-bold text-primary">{{ $trx->kode_transaksi }}</span>
+                                <span class="text-muted small ms-2">{{ $trx->created_at->format('d M Y H:i') }}</span>
+                            </div>
+                            <div>
+                                <span class="badge bg-{{ $trx->status === 'Dipinjam' ? 'warning text-dark' : 'success' }}">
+                                    {{ $trx->status }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-2 small">
+                            <div class="col-md-8">
+                                <div class="text-muted">Buku</div>
+                                <div class="fw-bold text-dark">{{ $trx->buku->judul ?? '-' }}</div>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <div class="text-muted">Tgl Pinjam</div>
+                                <div class="fw-semibold">{{ $trx->tanggal_pinjam->format('d/m/Y') }}</div>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <div class="text-muted">Batas Kembali</div>
+                                <div class="fw-semibold">{{ $trx->tanggal_kembali->format('d/m/Y') }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top small">
+                            <div>
+                                @if($trx->status === 'Dikembalikan')
+                                    <span class="text-success"><i class="bi bi-calendar-check me-1"></i> Dikembalikan: {{ $trx->tanggal_dikembalikan?->format('d/m/Y') }}</span>
+                                @else
+                                    @if($trx->terlambat > 0)
+                                        <span class="text-danger fw-bold"><i class="bi bi-exclamation-circle me-1"></i> Terlambat {{ $trx->terlambat }} hari</span>
+                                    @else
+                                        @php
+                                            $sisaHari = (int) today()->diffInDays($trx->tanggal_kembali, false);
+                                        @endphp
+                                        <span class="text-info"><i class="bi bi-clock me-1"></i> Sisa waktu: {{ $sisaHari >= 0 ? $sisaHari . ' hari lagi' : 'Hari ini batasnya' }}</span>
+                                    @endif
+                                @endif
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                @if($trx->nominal_denda > 0)
+                                    <span class="text-danger fw-bold">Denda: Rp {{ number_format($trx->nominal_denda, 0, ',', '.') }}</span>
+                                @endif
+                                <a href="{{ route('transaksi.show', $trx->id) }}" class="btn btn-sm btn-light">
+                                    <i class="bi bi-eye"></i> Detail
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-folder2-open fs-2 mb-2 d-block"></i>
+                        <span>Tidak ada riwayat peminjaman dengan status ini.</span>
+                    </div>
+                @endforelse
+            </div>
+        </div> {{-- Menutup col-lg-8 --}}
 
         <div class="col-lg-4">
             <div class="app-card">
@@ -129,5 +226,5 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> {{-- Menutup row g-4 --}}
 @endsection

@@ -19,7 +19,12 @@
             'items' => [
                 ['label' => 'Peminjaman', 'icon' => 'bi-bookmark-plus', 'route' => 'transaksi.create', 'active' => 'transaksi.create'],
                 ['label' => 'Pengembalian', 'icon' => 'bi-arrow-return-left', 'route' => 'transaksi.index', 'active' => 'transaksi.index'],
-                ['label' => 'Laporan Transaksi', 'icon' => 'bi-file-earmark-bar-graph', 'route' => 'transaksi.laporan', 'active' => 'transaksi.laporan*'],
+            ],
+        ],
+        [
+            'label' => 'Laporan',
+            'items' => [
+                ['label' => 'Laporan Transaksi', 'icon' => 'bi-file-earmark-bar-graph', 'route' => 'laporan.index', 'active' => 'laporan.*'],
             ],
         ],
         [

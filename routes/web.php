@@ -7,6 +7,8 @@ use App\Http\Controllers\BukuController;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\LaporanController;
 
 Route::get('/', function () {
     return view('home');
@@ -26,6 +28,20 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
+
+    Route::get('/search', [SearchController::class, 'index'])->name('search');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Laporan
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/laporan', [LaporanController::class, 'index'])
+        ->name('laporan.index');
+
+    Route::get('/laporan/pdf', [LaporanController::class, 'exportPdf'])
+        ->name('laporan.pdf');
 
     /*
     |--------------------------------------------------------------------------
@@ -76,12 +92,6 @@ Route::middleware(['auth'])->group(function () {
     | Transaksi
     |--------------------------------------------------------------------------
     */
-
-    Route::get('/transaksi/laporan', [TransaksiController::class, 'laporan'])
-        ->name('transaksi.laporan');
-
-    Route::get('/transaksi/laporan/pdf', [TransaksiController::class, 'exportPdf'])
-        ->name('transaksi.laporan.pdf');
 
     Route::resource('transaksi', TransaksiController::class)
         ->only(['index', 'create', 'store', 'show']);

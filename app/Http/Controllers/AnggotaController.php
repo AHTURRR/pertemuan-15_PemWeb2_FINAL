@@ -122,11 +122,24 @@ public function search(Request $request)
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
         $anggota = Anggota::findOrFail($id);
 
-        return view('anggota.show', compact('anggota'));
+        // Statistik global untuk anggota
+        $totalPinjam = $anggota->transaksis()->count();
+        $totalDenda = $anggota->transaksis->sum(fn($t) => $t->nominal_denda);
+
+        // Query transaksi untuk list/history (dengan filter)
+        $queryTransaksis = $anggota->transaksis()->with('buku');
+
+        if ($request->filled('status')) {
+            $queryTransaksis->where('status', $request->status);
+        }
+
+        $transaksis = $queryTransaksis->latest()->get();
+
+        return view('anggota.show', compact('anggota', 'transaksis', 'totalPinjam', 'totalDenda'));
     }
 
     /**

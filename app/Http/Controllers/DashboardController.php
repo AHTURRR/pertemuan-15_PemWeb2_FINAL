@@ -7,78 +7,96 @@ use App\Models\Buku;
 use App\Models\Transaksi;
 use Carbon\Carbon;
 
-
 class DashboardController extends Controller
 {
     public function index()
     {
-        $terlambat = Transaksi::with(['anggota','buku'])
-        ->where('status', 'Dipinjam')
-        ->whereDate('tanggal_kembali', '<', Carbon::today())
-        ->orderBy('tanggal_kembali')
-        ->get();
-
-    $jumlahTerlambat = $terlambat->count();
-
-    return view('dashboard', compact(
-        'terlambat',
-        'jumlahTerlambat'
-    ));
-    }
-}
-        $statistikBuku = [
+        $stats = [
             'total_buku' => Buku::count(),
             'buku_tersedia' => Buku::where('stok', '>', 0)->count(),
             'buku_habis' => Buku::where('stok', 0)->count(),
-        ];
-
-        $statistikAnggota = [
             'total_anggota' => Anggota::count(),
             'anggota_aktif' => Anggota::where('status', 'Aktif')->count(),
             'anggota_nonaktif' => Anggota::where('status', 'Nonaktif')->count(),
+            'total_transaksi' => Transaksi::count(),
+            'sedang_dipinjam' => Transaksi::where('status', 'Dipinjam')->count(),
+            'sudah_dikembalikan' => Transaksi::where('status', 'Dikembalikan')->count(),
+            'terlambat' => Transaksi::where('status', 'Dipinjam')
+                ->whereDate('tanggal_kembali', '<', today())
+                ->count(),
+            'transaksi_hari_ini' => Transaksi::whereDate('tanggal_pinjam', today())->count(),
+            'denda_bulan_ini' => Transaksi::whereMonth('tanggal_dikembalikan', now()->month)
+                ->whereYear('tanggal_dikembalikan', now()->year)
+                ->sum('denda'),
         ];
 
-        $statistikTransaksi = [
-            'dipinjam' => Transaksi::where('status', 'Dipinjam')->count(),
-            'dikembalikan' => Transaksi::where('status', 'Dikembalikan')->count(),
-            'terlambat' => Transaksi::where('status', 'Dipinjam')
-                ->whereDate('tanggal_kembali', '<', now())
-                ->count(),
-            'hari_ini' => Transaksi::whereDate('created_at', today())->count(),
-        ];
+        $chartData = collect(range(5, 0))->map(function ($i) {
+            $bulan = now()->subMonths($i);
+            return [
+                'bulan' => $bulan->translatedFormat('M Y'),
+                'pinjam' => Transaksi::whereMonth('tanggal_pinjam', $bulan->month)
+                    ->whereYear('tanggal_pinjam', $bulan->year)
+                    ->count(),
+                'kembali' => Transaksi::whereMonth('tanggal_dikembalikan', $bulan->month)
+                    ->whereYear('tanggal_dikembalikan', $bulan->year)
+                    ->count(),
+            ];
+        });
+
+        $bukuPopuler = Buku::withCount('transaksis')
+            ->orderByDesc('transaksis_count')
+            ->take(10)
+            ->get();
+
+        $anggotaAktif = Anggota::withCount('transaksis')
+            ->orderByDesc('transaksis_count')
+            ->take(5)
+            ->get();
 
         $bukuTerbaru = Buku::latest()
             ->take(5)
-            ->get(['judul', 'pengarang', 'tahun_terbit'])
-            ->map(function ($buku) {
-                return [
-                    'judul' => $buku->judul,
-                    'pengarang' => $buku->pengarang,
-                    'tahun' => $buku->tahun_terbit,
-                ];
-            });
+            ->get();
 
         $anggotaTerbaru = Anggota::latest()
             ->take(5)
-            ->get(['kode_anggota', 'nama', 'status'])
-            ->map(function ($anggota) {
-                return [
-                    'kode' => $anggota->kode_anggota,
-                    'nama' => $anggota->nama,
-                    'status' => $anggota->status,
-                ];
-            });
-
-        $aktivitasTerbaru = Transaksi::with(['anggota', 'buku'])
-            ->latest()
-            ->take(6)
             ->get();
 
-        return view('dashboard.index', compact(
-            'statistikBuku',
-            'statistikAnggota',
-            'statistikTransaksi',
+        $recentTransaksi = Transaksi::with(['anggota', 'buku'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $terlambat = Transaksi::with(['anggota', 'buku'])
+            ->where('status', 'Dipinjam')
+            ->whereDate('tanggal_kembali', '<', Carbon::today())
+            ->orderBy('tanggal_kembali')
+            ->get();
+
+        $jumlahTerlambat = $terlambat->count();
+
+        // 1. Pie Chart Kategori Buku
+        $kategoriChart = Buku::selectRaw('kategori, count(*) as count')
+            ->groupBy('kategori')
+            ->get();
+
+        // 2. Donut Chart Status Transaksi
+        $statusChart = [
+            'dipinjam' => Transaksi::where('status', 'Dipinjam')->count(),
+            'dikembalikan' => Transaksi::where('status', 'Dikembalikan')->count(),
+        ];
+
+        return view('dashboard', compact(
+            'stats',
+            'chartData',
+            'bukuPopuler',
+            'anggotaAktif',
             'bukuTerbaru',
             'anggotaTerbaru',
-            'aktivitasTerbaru'
+            'recentTransaksi',
+            'terlambat',
+            'jumlahTerlambat',
+            'kategoriChart',
+            'statusChart'
         ));
+    }
+}

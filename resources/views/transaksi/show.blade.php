@@ -19,44 +19,133 @@
         ]"
     >
         <x-slot name="actions">
-            @if ($isDipinjam)
-                <form action="{{ route('transaksi.kembalikan', $transaksi->id) }}" method="POST"
-                    data-confirm
-                    data-confirm-title="Kembalikan Buku"
-                    data-confirm-text="Konfirmasi buku sudah dikembalikan?"
-                    data-confirm-button="Ya, Kembalikan">
-                    @csrf
-                    @method('PUT')
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-arrow-return-left"></i> Kembalikan
-                    </button>
-                </form>
-            @endif
+           {{-- Status Pengembalian --}}
+@if($transaksi->status === 'Dipinjam')
+
+    <button type="button" class="btn btn-success" id="btn-kembalikan">
+        <i class="bi bi-arrow-return-left"></i> Kembalikan Buku
+    </button>
+
+    <form id="form-kembalikan"
+          action="{{ route('transaksi.kembalikan', $transaksi->id) }}"
+          method="POST"
+          class="d-none">
+        @csrf
+        @method('PUT')
+    </form>
+@else
+    {{-- Status setelah berhasil dikembalikan --}}
+    @if($transaksi->tanggal_dikembalikan <= $transaksi->tanggal_kembali)
+        <div class="alert alert-success d-flex align-items-start gap-3 shadow-sm border-0">
+            <i class="bi bi-check-circle-fill fs-2"></i>
+            <div>
+                <h5 class="mb-1">
+                    Buku Berhasil Dikembalikan
+                </h5>
+
+                <p class="mb-1">
+                    Buku dikembalikan <strong>tepat waktu</strong>.
+                </p>
+
+                <p class="mb-0">
+                    Tanggal dikembalikan:
+                    <strong>
+                        {{ $transaksi->tanggal_dikembalikan->format('d M Y') }}
+                    </strong>
+                </p>
+            </div>
+
+        </div>
+
+    @else
+
+        <div class="alert alert-warning d-flex align-items-start gap-3 shadow-sm border-0">
+
+            <i class="bi bi-exclamation-triangle-fill fs-2"></i>
+
+            <div>
+                <h5 class="mb-1">
+                    Buku Berhasil Dikembalikan
+                </h5>
+
+                <p class="mb-1">
+                    Buku dikembalikan terlambat
+                    <strong>{{ $transaksi->terlambat }} hari</strong>.
+                </p>
+
+                <p class="mb-1">
+                    Tanggal dikembalikan:
+                    <strong>
+                        {{ $transaksi->tanggal_dikembalikan->format('d M Y') }}
+                    </strong>
+                </p>
+
+                <p class="mb-0">
+                    Denda:
+                    <strong>
+                        Rp {{ number_format($transaksi->denda, 0, ',', '.') }}
+                    </strong>
+                </p>
+            </div>
+
+        </div>
+
+    @endif
+
+@endif
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.getElementById('btn-kembalikan')?.addEventListener('click', function () {
+
+    Swal.fire({
+        title: 'Konfirmasi Pengembalian',
+        text: 'Apakah Anda yakin buku ini sudah dikembalikan?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#198754',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya, Kembalikan',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+            document.getElementById('form-kembalikan').submit();
+        }
+
+    });
+
+});
+</script>
+@endpush
             <a href="{{ route('transaksi.index') }}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Kembali
             </a>
         </x-slot>
     </x-page-header>
-    @if ($isDipinjam && $terlambat > 0)
-<div class="alert alert-danger d-flex align-items-start gap-3 shadow-sm border-0 mb-4">
-    <i class="bi bi-exclamation-triangle-fill fs-2"></i>
-    <div>
-        <h5 class="mb-1">
-            Buku Terlambat Dikembalikan
-        </h5>
-        <p class="mb-1">
-            Buku ini telah melewati batas pengembalian selama
-            <strong>{{ $terlambat }} hari</strong>
-        </p>
-        <p class="mb-0">
-            Denda saat ini sebesar
-            <strong>
-                Rp {{ number_format($transaksi->nominal_denda,0,',','.') }}
-            </strong>
-        </p>
-    </div>
-</div>
-@endif
+    {{-- Alert jika sudah melewati batas pengembalian --}}
+    @if($transaksi->terlambat > 0)
+        <div class="alert alert-danger d-flex align-items-start gap-3 shadow-sm border-0 mt-4">
+            <i class="bi bi-exclamation-triangle-fill fs-2"></i>
+            <div>
+                <h5 class="mb-1">
+                    Buku Terlambat Dikembalikan
+                </h5>
+                <p class="mb-1">
+                    Buku ini telah melewati batas pengembalian selama
+                    <strong>{{ $transaksi->terlambat }} hari</strong>.
+                </p>
+                <p class="mb-0">
+                    Denda saat ini:
+                    <strong>
+                        Rp {{ number_format($transaksi->nominal_denda, 0, ',', '.') }}
+                    </strong>
+                </p>
+            </div>
+        </div>
+    @endif
 
     <div class="stat-grid">
         <x-stat-card label="Status" :value="$terlambat && $isDipinjam ? 'Terlambat' : $transaksi->status" icon="bi-info-circle" :variant="$terlambat && $isDipinjam ? 'danger' : ($isDipinjam ? 'warning' : 'success')" />

@@ -32,6 +32,14 @@
                         </div>
                     </div>
 
+                    <form class="d-flex" action="{{ route('search') }}" method="GET">
+                        <input class="form-control me-2" type="search" name="q"
+                                placeholder="Cari buku, anggota, transaksi..." value="{{ request('q') }}">
+                        <button class="btn btn-outline-light" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+
                     <div class="dropdown">
                         <button class="btn user-menu dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             <span class="avatar">{{ Str::of(Auth::user()->name)->substr(0, 1)->upper() }}</span>
