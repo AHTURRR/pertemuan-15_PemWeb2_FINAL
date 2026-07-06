@@ -130,11 +130,9 @@ Beberapa proses dijalankan secara otomatis oleh sistem.
 
 Halaman autentikasi pengguna sebelum mengakses sistem.
 
-```md
-![Migration Result](screenshots/login.png)
-```
 
----
+![Migration Result](screenshots/login.png)
+
 
 ## 📊 Dashboard
 
