@@ -131,7 +131,7 @@ Beberapa proses dijalankan secara otomatis oleh sistem.
 Halaman autentikasi pengguna sebelum mengakses sistem.
 
 ```md
-![Login](screenshots/login.png)
+![Migration Result](screenshots/login.png)
 ```
 
 ---
@@ -324,4 +324,3 @@ Mahasiswa Informatika
 # 📄 License
 
 Project ini dikembangkan sebagai media pembelajaran dan implementasi Sistem Informasi Perpustakaan menggunakan Laravel.
-
