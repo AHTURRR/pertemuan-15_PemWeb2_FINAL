@@ -138,17 +138,16 @@ Halaman autentikasi pengguna sebelum mengakses sistem.
 
 Menampilkan ringkasan aktivitas dan statistik utama sistem perpustakaan.
 
-```md
-![Dashboard](screenshots/dashboard.png)
-```
 
----
+![Dashboard](screenshots/dashboard.png)
+
+
 
 ## 📚 Daftar Buku
 
 Menampilkan seluruh koleksi buku beserta informasi dan stok yang tersedia.
 
-```md
+
 ![Daftar Buku](screenshots/books.png)
 ```
 
