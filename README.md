@@ -1,264 +1,327 @@
-# Tugas 2 - MVC Laravel Pemrograman Web 2 Pertemuan 10
+# 📚 Pustaka App
 
-Sistem Perpustakaan berbasis Laravel dengan implementasi Accessor dan Scope pada Model Eloquent.
+<div align="center">
 
-## 📋 Daftar Isi
+**Modern Library Management System built with Laravel 13**
 
-- [Fitur](#fitur)
-- [Teknologi](#teknologi)
-- [Instalasi](#instalasi)
-- [Screenshot](#screenshot)
+Aplikasi Sistem Informasi Perpustakaan berbasis Laravel yang dirancang untuk membantu proses pengelolaan buku, anggota, peminjaman, pengembalian, hingga penyajian laporan secara efisien melalui dashboard yang informatif dan antarmuka yang sederhana.
 
----
+![Laravel](https://img.shields.io/badge/Laravel-13-red?style=for-the-badge\&logo=laravel)
+![PHP](https://img.shields.io/badge/PHP-8.4-blue?style=for-the-badge\&logo=php)
+![MySQL](https://img.shields.io/badge/MySQL-Database-blue?style=for-the-badge\&logo=mysql)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5-purple?style=for-the-badge\&logo=bootstrap)
 
-## ✨ Fitur
-
-### 1. **Database Migration**
-
-Membuat struktur database dengan menggunakan migration Laravel.
-
-![Migration Result](sspoto/hasilmigrate.png)
-
-### 2. **Database Seeding**
-
-Mengisi data dummy ke database menggunakan seeder.
-
-![Seeding Result](sspoto/hasilseeder.png)
-
-### 3. **Hasil Testing**
-
-Testing accessor dan scope pada Model Eloquent.
-
-![Test Result 1](sspoto/hasil.png)
-
-![Test Result 2](sspoto/hasil1.png)
-
-### 4. **Route Testing**
-
-Testing route dengan akses accessor dan scope.
-
-![Route Testing](sspoto/routetesting.png)
-
-### 5. **Database View**
-
-Visualisasi data dari database.
-
-![Database View](sspoto/viewdatabse.png)
+</div>
 
 ---
 
-## 🛠️ Teknologi
+# ✨ Fitur Unggulan
 
-- **Framework:** Laravel 13.9.0
-- **PHP Version:** 8.4.12
-- **Database:** MySQL
-- **Frontend:** Bootstrap 5.3.0
-- **ORM:** Eloquent
+## 📊 Dashboard Analytics
 
----
+Dashboard menyajikan informasi secara real-time sehingga admin dapat memantau kondisi perpustakaan dengan cepat.
 
-## 📦 Instalasi
+**Menampilkan:**
 
-### Prerequisites
-
-- PHP 8.3+
-- Composer
-- MySQL/MariaDB
-- Node.js (opsional)
-
-### Langkah-langkah
-
-1. **Clone Repository**
-
-```bash
-git clone https://github.com/AHTURRR/tugas2-mvc-laravel_PemWeb2_pertem-10.git
-cd tugas2-mvc-laravel_PemWeb2_pertem-10
-```
-
-2. **Install Dependencies**
-
-```bash
-composer install
-npm install
-```
-
-3. **Setup Environment**
-
-```bash
-cp .env.example .env
-php artisan key:generate
-```
-
-4. **Database Configuration**
-   Edit `.env` dan sesuaikan dengan database Anda:
-
-```
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=perpustakaan_laravel
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-5. **Run Migration & Seeding**
-
-```bash
-php artisan migrate
-php artisan db:seed
-```
-
-6. **Start Development Server**
-
-```bash
-php artisan serve
-```
-
-Akses aplikasi di: `http://localhost:8000`
+* Total Buku
+* Buku Tersedia
+* Buku Habis
+* Total Anggota
+* Anggota Aktif
+* Total Transaksi
+* Buku Sedang Dipinjam
+* Buku Dikembalikan
+* Buku Terlambat
+* Total Denda
+* Grafik Transaksi Bulanan
+* Statistik Buku
+* Riwayat Transaksi Terbaru
+* Buku Terbaru
+* Anggota Terbaru
 
 ---
 
-## 🎯 Testing Endpoint
+## 📚 Manajemen Buku
 
-- **Accessor & Scope:** `http://localhost:8000/test-accessor-scope`
-- **Database Test:** `http://localhost:8000/test-db`
-- **Daftar Buku:** `http://localhost:8000/perpustakaan`
-- **Daftar Anggota:** `http://localhost:8000/anggota`
+* CRUD Buku
+* Detail Buku
+* Pencarian Buku
+* Filter Kategori
+* Manajemen Stok
+* Bulk Delete
+* Export Data Buku
 
 ---
 
-## 📚 Implementasi
-# pertemuan-11_PemWeb2
-# pertemuan-12_PemWeb2
+## 👥 Manajemen Anggota
 
+* CRUD Anggota
+* Detail Anggota
+* Status Aktif / Nonaktif
+* Pencarian Data
+* Export Data Anggota
 
-# Sistem Manajemen Anggota Perpustakaan PERTEMUAN 13
+---
 
-## Deskripsi
+## 📖 Sistem Peminjaman
 
-Aplikasi berbasis Laravel untuk mengelola data anggota perpustakaan dengan fitur CRUD, auto-generate kode anggota, pencarian dan filter data, serta export data ke Excel.
+* Peminjaman Buku
+* Generate Kode Transaksi Otomatis
+* Validasi Ketersediaan Stok
+* Pengurangan Stok Otomatis
+* Penentuan Tanggal Pengembalian Otomatis
+* Riwayat Transaksi
 
-## Teknologi yang Digunakan
+---
 
-* Laravel 13
-* PHP 8.4
-* MySQL
-* Bootstrap 5
-* Laravel Excel (Maatwebsite Excel)
+## 🔄 Sistem Pengembalian
 
-## Fitur
+* Pengembalian Buku
+* Update Status Otomatis
+* Penambahan Stok Buku
+* Perhitungan Denda Otomatis
+* Mencegah Pengembalian Ganda
 
-### 1. CRUD Data Anggota
+---
 
-* Tambah anggota
-* Lihat detail anggota
-* Edit data anggota
-* Hapus anggota
+## 💰 Sistem Denda
 
-### 2. Auto Generate Kode Anggota
+* Perhitungan keterlambatan otomatis
+* Denda berdasarkan jumlah hari keterlambatan
+* Informasi total denda pada transaksi
+* Rekap denda pada laporan
 
-Format kode anggota:
+---
 
-AGT-2026-001
+## 📈 Laporan
 
-AGT-2026-002
+* Filter berdasarkan tanggal
+* Filter status transaksi
+* Filter anggota
+* Statistik laporan
+* Export PDF
 
-AGT-2026-003
+---
 
-### 3. Search dan Filter
+## 🔍 Pencarian Data
 
-Pencarian berdasarkan:
+Memudahkan admin menemukan data buku, anggota maupun transaksi dengan cepat melalui fitur pencarian.
 
-* Nama
-* Email
-* Telepon
+---
 
-Filter berdasarkan:
+## ⚡ Otomatisasi Sistem
 
-* Jenis Kelamin
-* Status
-* Pekerjaan
+Beberapa proses dijalankan secara otomatis oleh sistem.
 
-### 4. Export Excel
+* Generate kode transaksi
+* Update stok buku
+* Perhitungan tanggal kembali
+* Perhitungan denda
+* Update status transaksi
+* Statistik dashboard secara real-time
 
-Export seluruh data anggota ke file Excel (.xlsx).
+---
 
-## Screenshot
+# 🖼️ Tampilan Aplikasi
 
-### Dashboard Data Anggota
+> **Catatan:** Simpan seluruh gambar pada folder `screenshots/` agar README dapat menampilkannya dengan benar.
 
-![Dashboard](sspoto/dashboard.png)
+## 🔐 Login
 
-### Form Tambah Anggota
+Halaman autentikasi pengguna sebelum mengakses sistem.
 
-![Create](sspoto/create.png)
+```md
+![Login](screenshots/login.png)
+```
 
-### Detail Anggota
+---
 
-![Show](sspoto/show.png)
+## 📊 Dashboard
 
-### Edit Anggota
+Menampilkan ringkasan aktivitas dan statistik utama sistem perpustakaan.
 
-![Edit](sspoto/edit.png)
+```md
+![Dashboard](screenshots/dashboard.png)
+```
 
-### Search dan Filter
+---
 
-![Search](sspoto/search.png)
+## 📚 Daftar Buku
 
-### Export Excel
+Menampilkan seluruh koleksi buku beserta informasi dan stok yang tersedia.
 
-![Export](sspoto/export.png)
+```md
+![Daftar Buku](screenshots/books.png)
+```
 
-## Cara Menjalankan Project
+---
 
-Clone repository:
+## 📖 Detail Buku
+
+Menampilkan informasi lengkap mengenai buku yang dipilih.
+
+```md
+![Detail Buku](screenshots/book-detail.png)
+```
+
+---
+
+## 👥 Daftar Anggota
+
+Halaman pengelolaan seluruh anggota perpustakaan.
+
+```md
+![Daftar Anggota](screenshots/members.png)
+```
+
+---
+
+## 📋 Daftar Transaksi
+
+Menampilkan seluruh riwayat peminjaman dan pengembalian buku.
+
+```md
+![Transaksi](screenshots/transactions.png)
+```
+
+---
+
+## 📚 Form Peminjaman
+
+Form untuk melakukan transaksi peminjaman buku.
+
+```md
+![Peminjaman](screenshots/borrow.png)
+```
+
+---
+
+## 🔄 Detail Pengembalian
+
+Menampilkan informasi pengembalian beserta status dan denda apabila terjadi keterlambatan.
+
+```md
+![Pengembalian](screenshots/return.png)
+```
+
+---
+
+## 📈 Halaman Laporan
+
+Laporan transaksi dengan berbagai filter untuk mempermudah analisis data.
+
+```md
+![Laporan](screenshots/report.png)
+```
+
+---
+
+## 📄 Export PDF
+
+Mendukung pembuatan laporan dalam format PDF sehingga mudah dicetak maupun diarsipkan.
+
+```md
+![Export PDF](screenshots/export-pdf.png)
+```
+
+---
+
+## 🔍 Search
+
+Mempermudah pencarian data secara cepat berdasarkan kata kunci tertentu.
+
+```md
+![Search](screenshots/search.png)
+```
+
+---
+
+## 📊 Dashboard Analytics
+
+Visualisasi data menggunakan grafik dan statistik untuk membantu proses monitoring.
+
+```md
+![Analytics](screenshots/analytics.png)
+```
+
+---
+
+# 🛠️ Tech Stack
+
+| Teknologi   | Keterangan           |
+| ----------- | -------------------- |
+| Laravel 13  | Backend Framework    |
+| PHP 8.4     | Programming Language |
+| MySQL       | Database             |
+| Blade       | Template Engine      |
+| Bootstrap 5 | User Interface       |
+| Vite        | Asset Bundler        |
+| Composer    | Dependency Manager   |
+
+---
+
+# ⚙️ Instalasi
 
 ```bash
 git clone https://github.com/username/pustaka-app.git
-```
 
-Masuk ke folder project:
-
-```bash
 cd pustaka-app
-```
 
-Install dependency:
-
-```bash
 composer install
-```
 
-Copy file environment:
+npm install
 
-```bash
 cp .env.example .env
-```
 
-Generate key:
-
-```bash
 php artisan key:generate
-```
 
-Migrasi database:
-
-```bash
 php artisan migrate
-```
 
-Jalankan server:
+npm run build
 
-```bash
 php artisan serve
 ```
 
-## Author
+---
 
-Nama: Ahmad Turmudi
+# 📂 Struktur Project
 
-Program Studi Informatika
+```
+app/
+database/
+public/
+resources/
+routes/
+storage/
+```
 
-UIN K.H. Abdurrahman Wahid Pekalongan
-# pertemuan-13_PemWeb2
-# pertemuan-14_PemWeb2
+---
+
+# 🚀 Pengembangan Selanjutnya
+
+Beberapa fitur yang dapat ditambahkan pada versi berikutnya:
+
+* Role & Permission (Admin, Petugas, Anggota)
+* Barcode / QR Code Buku
+* Scan Barcode saat Peminjaman
+* Email Notifikasi Pengembalian
+* Export Excel
+* Import Data Excel
+* Dashboard Statistik yang lebih interaktif
+* REST API
+* Dark Mode
+
+---
+
+# 👨‍💻 Author
+
+**Ahmad Turmudi**
+
+Mahasiswa Informatika
+
+---
+
+# 📄 License
+
+Project ini dikembangkan sebagai media pembelajaran dan implementasi Sistem Informasi Perpustakaan menggunakan Laravel.
+
