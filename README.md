@@ -149,99 +149,70 @@ Menampilkan seluruh koleksi buku beserta informasi dan stok yang tersedia.
 
 
 ![Daftar Buku](screenshots/books.png)
-```
 
----
 
 ## 📖 Detail Buku
 
 Menampilkan informasi lengkap mengenai buku yang dipilih.
 
-```md
 ![Detail Buku](screenshots/book-detail.png)
-```
 
----
 
 ## 👥 Daftar Anggota
 
 Halaman pengelolaan seluruh anggota perpustakaan.
 
-```md
 ![Daftar Anggota](screenshots/members.png)
-```
 
----
 
 ## 📋 Daftar Transaksi
 
 Menampilkan seluruh riwayat peminjaman dan pengembalian buku.
 
-```md
 ![Transaksi](screenshots/transactions.png)
-```
 
----
 
 ## 📚 Form Peminjaman
 
 Form untuk melakukan transaksi peminjaman buku.
 
-```md
 ![Peminjaman](screenshots/borrow.png)
-```
 
----
 
 ## 🔄 Detail Pengembalian
 
 Menampilkan informasi pengembalian beserta status dan denda apabila terjadi keterlambatan.
 
-```md
 ![Pengembalian](screenshots/return.png)
-```
 
----
 
 ## 📈 Halaman Laporan
 
 Laporan transaksi dengan berbagai filter untuk mempermudah analisis data.
 
-```md
 ![Laporan](screenshots/report.png)
-```
 
----
 
 ## 📄 Export PDF
 
 Mendukung pembuatan laporan dalam format PDF sehingga mudah dicetak maupun diarsipkan.
 
-```md
 ![Export PDF](screenshots/export-pdf.png)
-```
 
----
 
 ## 🔍 Search
 
 Mempermudah pencarian data secara cepat berdasarkan kata kunci tertentu.
 
-```md
 ![Search](screenshots/search.png)
-```
 
----
 
 ## 📊 Dashboard Analytics
 
 Visualisasi data menggunakan grafik dan statistik untuk membantu proses monitoring.
 
-```md
 ![Analytics](screenshots/analytics.png)
-```
 
----
 
 # 🛠️ Tech Stack
 
